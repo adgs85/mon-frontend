@@ -34,7 +34,7 @@ function refineStats(stat: IStat) {
 function fillMapOfStats(map: IMapOfStats, stat: IStat) {
     let istat: IDisplayableStat = map[stat.StatType]
     if (!istat) {
-        istat = { stats: [], mainMetricNumber: undefined, mainMetricPayload: undefined }
+        istat = { stats: [], mainMetricNumber: undefined, mainMetricStat: undefined }
         map[stat.StatType] = istat
     }
     istat.stats.push(stat)

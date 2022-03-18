@@ -6,7 +6,7 @@ export interface IMapOfStats {
 export interface IDisplayableStat {
     stats: IStat[]
     mainMetricNumber: number | undefined
-    mainMetricPayload: any
+    mainMetricStat: any
 }
 
 export interface IStat {
