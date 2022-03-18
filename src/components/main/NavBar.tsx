@@ -48,6 +48,4 @@ const NavBarFunc = ({ statsTypes, setActiveStatTab, activeStat }: INavBarProps) 
     )
 }
 
-export const NavBar = memo(NavBarFunc, (prevProps, nextProps): boolean => {
-    return deepEqual(prevProps, nextProps)
-})
+export const NavBar = memo(NavBarFunc, deepEqual)
