@@ -3,7 +3,8 @@ import { genericGetFetch } from "../../transport/GenericFetch";
 import { NavBar } from "../main/NavBar";
 import { marshal } from "../marshalling/StatsMarshalling";
 import { ConnectionState } from "./Constants";
-import {IMapOfStats} from "../marshalling/StatsModel"
+import { IMapOfStats } from "../marshalling/StatsModel"
+import { StatsController } from "../main/StatsController";
 
 
 interface LayoutState {
@@ -73,11 +74,11 @@ export class Layout extends React.PureComponent<{}, LayoutState>{
         }, 1000)
     }
 
-    setAvailableStats(statsMap: IMapOfStats){
+    setAvailableStats(statsMap: IMapOfStats) {
         let availableStatsNames = Object.keys(statsMap).sort()
         this.setState({
             connState: ConnectionState.sane,
-            statsMap:statsMap,
+            statsMap: statsMap,
             statsAvailable: availableStatsNames
         })
     }
@@ -90,13 +91,20 @@ export class Layout extends React.PureComponent<{}, LayoutState>{
 
     setActiveStatTab = (activeStat: string) => {
         if (this.state.activeStat !== activeStat) {
-            this.setState((state, props) => {return { activeStat: activeStat }})
+            this.setState((state, props) => { return { activeStat: activeStat } })
         }
     }
 
     render() {
+        let { activeStat, statsMap } = this.state;
+        let activeStatProps = statsMap[activeStat]
         return <div>
             <NavBar setActiveStatTab={this.setActiveStatTab} statsTypes={this.state.statsAvailable} activeStat={this.state.activeStat} />
+            <div className="p-5 mx-4 bg-light rounded-3">
+                <div className="container-fluid">
+                    <StatsController activeStat={activeStat} stat={activeStatProps} />
+                </div>
+            </div>
         </div>
     }
 }
