@@ -8,20 +8,27 @@ export function newDiskStatProcessor() {
             let fullStats = map[statType]
 
             let minUsage = Number.MAX_VALUE
-            let minUsagePayload:IDisk|undefined;
+            let minUsagePayload: IStat | undefined;
 
             fullStats.stats.forEach((it) => {
-                it.Payload.forEach((payload) => {
-                    let disk = payload as IDisk
+
+                let diskUsageMeanPercent = 0;
+                let castPayload = it.Payload as IDisk[]
+                castPayload.forEach((disk) => {
                     let usage = disk.UsagePerCent || 0;
-                    if(minUsage > usage){
-                        minUsage = usage
-                        minUsagePayload=disk
-                    }
+                    diskUsageMeanPercent += usage
                 })
+
+                castPayload.sort((a, b) => { return a.StoragePath > b.StoragePath ? 1 : 0 })
+
+                diskUsageMeanPercent = diskUsageMeanPercent / it.Payload.length
+                if (minUsage > diskUsageMeanPercent) {
+                    minUsage = diskUsageMeanPercent
+                    minUsagePayload = it
+                }
             })
             fullStats.mainMetricNumber = minUsage
-            fullStats.mainMetricPayload = minUsagePayload
+            fullStats.mainMetricStat = minUsagePayload
         },
 
         preprocess(stat: IStat) {
