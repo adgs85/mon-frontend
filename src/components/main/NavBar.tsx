@@ -1,11 +1,7 @@
 import React, { useState } from "react";
 
 
-export interface NavBarProps {
-
-}
-
-export function NavBar(props: NavBarProps) {
+export function NavBar(props: {}) {
 
     const [activeTabIdx, setActiveTabIdx] = useState(0);
 
