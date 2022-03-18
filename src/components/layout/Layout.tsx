@@ -5,6 +5,7 @@ import { marshal } from "../marshalling/StatsMarshalling";
 import { ConnectionState } from "./Constants";
 import { IMapOfStats } from "../marshalling/StatsModel"
 import { StatsController } from "../main/StatsController";
+import { NoStatsSelected } from "../main/NoStatsSelected";
 
 
 interface LayoutState {
@@ -96,13 +97,14 @@ export class Layout extends React.PureComponent<{}, LayoutState>{
     }
 
     render() {
-        let { activeStat, statsMap } = this.state;
+        let { activeStat, statsMap, statsAvailable } = this.state;
         let activeStatProps = statsMap[activeStat]
         return <div>
             <NavBar setActiveStatTab={this.setActiveStatTab} statsTypes={this.state.statsAvailable} activeStat={this.state.activeStat} />
             <div className="p-5 mx-4 bg-light rounded-3">
                 <div className="container-fluid">
-                    <StatsController activeStat={activeStat} stat={activeStatProps} />
+                    {statsAvailable.length > 0 && !activeStat && <NoStatsSelected/>}
+                    {activeStat && <StatsController activeStat={activeStat} stat={activeStatProps} />}
                 </div>
             </div>
         </div>
