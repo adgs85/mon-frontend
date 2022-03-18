@@ -10,8 +10,8 @@ export function newCpuStatProcessor() {
             let sum = 0
             let cpuCount = 0
             cpuStats.stats.forEach((it) => {
-                it.Payload.forEach((payload) => {
-                    let cpu = payload as ICpu
+                let castPayload = it.Payload as ICpu[]
+                castPayload.forEach((cpu) => {
                     sum += cpu.CpuUsagePercent
                     cpuCount++
                 })
