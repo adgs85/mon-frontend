@@ -1,16 +1,22 @@
 import React from "react";
 import { genericGetFetch } from "../../transport/GenericFetch";
+import { NavBar } from "../main/NavBar";
+import { marshal } from "../marshalling/StatsMarshalling";
 import { ConnectionState } from "./Constants";
+import {IMapOfStats} from "../marshalling/StatsModel"
 
 
 interface LayoutState {
     statsSnapshotUrl: string
     connState: ConnectionState
+    activeStat: string
+    statsAvailable: string[]
+    statsMap: IMapOfStats
 }
-
 
 const defaultServerUrl = "http://localhost:8080"
 export const statsSnapshotUrl = "/stats/snapshot"
+
 
 export class Layout extends React.PureComponent<{}, LayoutState>{
 
@@ -22,7 +28,10 @@ export class Layout extends React.PureComponent<{}, LayoutState>{
         super(props)
         this.state = {
             statsSnapshotUrl: defaultServerUrl + statsSnapshotUrl,
-            connState: ConnectionState.init
+            connState: ConnectionState.init,
+            activeStat: "",
+            statsAvailable: [],
+            statsMap: {}
         }
     }
 
@@ -30,38 +39,64 @@ export class Layout extends React.PureComponent<{}, LayoutState>{
         this.setState({ statsSnapshotUrl: url })
     }
 
+    renderChildrenPassProps() {
+        return React.Children.map<React.ReactNode, React.ReactNode>(this.props.children, child => {
+            if (React.isValidElement(child)) {
+                return React.cloneElement(child, this.props)
+            }
+        })
+    }
+
     componentDidMount() {
         this.intervalId = window.setInterval(() => {
             if (this.fetchInProgress) {
-                console.info("Stats fetch skipped, previous fetch in flight")
+                console.warn("Stats fetch skipped, previous fetch in flight")
                 return
             }
             genericGetFetch(
                 {
                     url: this.state.statsSnapshotUrl,
                     successFunction: (json: any) => {
-                        console.log(json)
-                        this.setState({ connState: ConnectionState.sane })
                         this.fetchInProgress = false
+                        this.setAvailableStats(marshal(json))
                     },
                     errorFunction: (result: any) => {
                         this.fetchInProgress = false
-                        this.setState({ connState: ConnectionState.error })
+                        this.setState({
+                            connState: ConnectionState.error,
+                            activeStat: "",
+                            statsAvailable: []
+                        })
                     }
                 }
             )
         }, 1000)
     }
 
-    componentWillUnmount(){
-        if(typeof this.intervalId !== 'undefined'){
+    setAvailableStats(statsMap: IMapOfStats){
+        let availableStatsNames = Object.keys(statsMap).sort()
+        this.setState({
+            connState: ConnectionState.sane,
+            statsMap:statsMap,
+            statsAvailable: availableStatsNames
+        })
+    }
+
+    componentWillUnmount() {
+        if (typeof this.intervalId !== 'undefined') {
             clearInterval(this.intervalId)
         }
     }
 
+    setActiveStatTab = (activeStat: string) => {
+        if (this.state.activeStat !== activeStat) {
+            this.setState((state, props) => {return { activeStat: activeStat }})
+        }
+    }
+
     render() {
-        return <>
-            {this.props.children}
-        </>
+        return <div>
+            <NavBar setActiveStatTab={this.setActiveStatTab} statsTypes={this.state.statsAvailable} activeStat={this.state.activeStat} />
+        </div>
     }
 }

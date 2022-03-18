@@ -1,9 +1,27 @@
-import React, { useState } from "react";
+import React, { memo, useState } from "react";
+import { deepEqual } from 'fast-equals';
 
 
-export function NavBar(props: {}) {
+export interface INavBarProps {
+    statsTypes: string[]
+    activeStat: string
+    setActiveStatTab: (activeStat: string) => void
+}
 
-    const [activeTabIdx, setActiveTabIdx] = useState(0);
+
+
+const NavBarFunc = ({ statsTypes, setActiveStatTab, activeStat }: INavBarProps) => {
+    console.info("render navbar")
+    let renderAvailableStats = (statsTypes: string[]) => {
+        return statsTypes.map((type, _) => {
+            let active = activeStat === type;
+            if (active) {
+                setActiveStatTab(type)
+            }
+
+            return <span key={type} className={"nav-item nav-link" + (active ? " active" : "")} onClick={() => setActiveStatTab(type)}>{type}</span>
+        })
+    }
 
     return (
         <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -14,17 +32,22 @@ export function NavBar(props: {}) {
                 </button>
                 <div className="collapse navbar-collapse" id="navbarCollapse">
                     <div className="navbar-nav">
+                        {statsTypes.length > 0 &&
+                            <>
+                                {renderAvailableStats(statsTypes)}
+                            </>
+                        }
 
-                        <span
-                            className={"nav-item nav-link" + (activeTabIdx === 0 ? " active" : "")}
-                            onClick={() => setActiveTabIdx(0)}>Home</span>
-
-                        <span
-                            className={"nav-item nav-link" + (activeTabIdx === 1 ? " active" : "")}
-                            onClick={() => setActiveTabIdx(1)}>Settings (todo)</span>
+                        {statsTypes.length == 0 &&
+                            <span className="nav-item nav-link">No stats available...</span>
+                        }
                     </div>
                 </div>
             </div>
         </nav>
     )
 }
+
+export const NavBar = memo(NavBarFunc, (prevProps, nextProps): boolean => {
+    return deepEqual(prevProps, nextProps)
+})
