@@ -8,17 +8,20 @@ export function newDiskStatProcessor() {
             let fullStats = map[statType]
 
             let minUsage = Number.MAX_VALUE
+            let minUsagePayload:IDisk|undefined;
 
             fullStats.stats.forEach((it) => {
                 it.Payload.forEach((payload) => {
-                    let cpu = payload as IDisk
-                    let usage = cpu.UsagePerCent || 0;
+                    let disk = payload as IDisk
+                    let usage = disk.UsagePerCent || 0;
                     if(minUsage > usage){
                         minUsage = usage
+                        minUsagePayload=disk
                     }
                 })
             })
             fullStats.mainMetricNumber = minUsage
+            fullStats.mainMetricPayload = minUsagePayload
         },
 
         preprocess(stat: IStat) {
