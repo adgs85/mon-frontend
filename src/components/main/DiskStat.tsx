@@ -16,7 +16,7 @@ export class DiskStat extends React.PureComponent<IDisplayableStat, {}>{
         let comps = stats.flatMap(it => {
             return (it.Payload as IDisk[]).map(payload => {
                 return <StatsRowWrapper key={it.InstanceName + payload.StoragePath}>
-                    <td>{payload.UsagePerCent?.toFixed(2)}</td>
+                    <td>{payload.UsagePerCent?.toFixed(2)}%</td>
                     <td>{payload.StoragePath}</td>
                     <MetaDataComponent {...it} />
                 </StatsRowWrapper>
