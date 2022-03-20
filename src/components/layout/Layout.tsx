@@ -6,6 +6,7 @@ import { ConnectionState } from "./Constants";
 import { IMapOfStats } from "../marshalling/StatsModel"
 import { StatsController } from "../main/StatsController";
 import { NoStatsSelected } from "../main/NoStatsSelected";
+import { defaultServerUrl, statsSnapshotUrl } from "../../config/Config";
 
 
 interface LayoutState {
@@ -16,8 +17,6 @@ interface LayoutState {
     statsMap: IMapOfStats
 }
 
-const defaultServerUrl = "http://localhost:8080"
-export const statsSnapshotUrl = "/stats/snapshot"
 
 
 export class Layout extends React.PureComponent<{}, LayoutState>{
@@ -76,6 +75,7 @@ export class Layout extends React.PureComponent<{}, LayoutState>{
     }
 
     setAvailableStats(statsMap: IMapOfStats) {
+        console.log(process.env)
         let availableStatsNames = Object.keys(statsMap).sort()
         this.setState({
             connState: ConnectionState.sane,
